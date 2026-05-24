@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CategoriesModule } from './categories/categories.module';
+import { ProductsModule } from './products/products.module';
+import { InvoicesModule } from './invoices/invoices.module';
 
 @Module({
   imports: [
@@ -15,6 +18,12 @@ import { MongooseModule } from '@nestjs/mongoose';
         uri: configService.get<string>('MONGO_URI'),
       }),
     }),
+
+    CategoriesModule,
+
+    ProductsModule,
+
+    InvoicesModule,
   ],
 
   controllers: [],
