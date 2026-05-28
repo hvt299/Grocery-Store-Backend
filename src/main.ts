@@ -21,6 +21,7 @@ async function bootstrap() {
       'Tài liệu API cho hệ thống quản lý cửa hàng (NestJS + MongoDB)',
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .addTag('Categories', 'Quản lý danh mục')
     .addTag('Products', 'Quản lý kho hàng')
     .addTag('Invoices', 'Quản lý hóa đơn & bán hàng')
