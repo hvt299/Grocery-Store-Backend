@@ -11,7 +11,7 @@ class CreateInvoiceItemDto {
     @ApiProperty({ description: 'Tên sản phẩm lúc bán' })
     @IsString()
     @IsNotEmpty()
-    productName!: string;
+    productName: string;
 
     @ApiPropertyOptional({ description: 'Đơn vị tính' })
     @IsOptional()
@@ -21,19 +21,19 @@ class CreateInvoiceItemDto {
     @ApiProperty({ description: 'Số lượng' })
     @IsNumber()
     @Min(1)
-    quantity!: number;
+    quantity: number;
 
     @ApiProperty({ description: 'Giá bán tại thời điểm đó' })
     @IsNumber()
     @Min(0)
-    price!: number;
+    price: number;
 }
 
 export class CreateInvoiceDto {
     @ApiProperty({ description: 'Tổng tiền hóa đơn', example: 150000 })
     @IsNumber()
     @Min(0)
-    totalAmount!: number;
+    totalAmount: number;
 
     @ApiPropertyOptional({ description: 'Phương thức thanh toán', enum: ['Cash', 'Transfer', 'Card'], default: 'Cash' })
     @IsOptional()
@@ -49,5 +49,5 @@ export class CreateInvoiceDto {
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => CreateInvoiceItemDto)
-    items!: CreateInvoiceItemDto[];
+    items: CreateInvoiceItemDto[];
 }

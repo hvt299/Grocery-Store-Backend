@@ -33,11 +33,11 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3001);
 
   console.log(
-    `🚀 Server is running on: http://localhost:${process.env.PORT ?? 3001}`,
+    `Server is running on: http://localhost:${process.env.PORT ?? 3001}`,
   );
 
   console.log(
-    `📚 Swagger Docs available at: http://localhost:${process.env.PORT ?? 3001
+    `Swagger Docs available at: http://localhost:${process.env.PORT ?? 3001
     }/api/docs`,
   );
 }

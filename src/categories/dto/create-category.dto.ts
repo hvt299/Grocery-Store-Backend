@@ -8,5 +8,5 @@ export class CreateCategoryDto {
     })
     @IsString()
     @IsNotEmpty({ message: 'Tên danh mục không được để trống' })
-    name!: string;
+    name: string;
 }

@@ -7,35 +7,35 @@ export type InvoiceDocument = HydratedDocument<Invoice>;
 @Schema({ _id: false })
 export class InvoiceItem {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Product', default: null })
-    productId!: Product;
+    productId: Product;
 
     @Prop({ required: true })
-    productName!: string;
+    productName: string;
 
     @Prop()
-    unit!: string;
+    unit: string;
 
     @Prop({ required: true, default: 1 })
-    quantity!: number;
+    quantity: number;
 
     @Prop({ required: true })
-    price!: number;
+    price: number;
 }
 const InvoiceItemSchema = SchemaFactory.createForClass(InvoiceItem);
 
 @Schema({ timestamps: true })
 export class Invoice {
     @Prop({ required: true, default: 0 })
-    totalAmount!: number;
+    totalAmount: number;
 
     @Prop({ default: 'Cash', enum: ['Cash', 'Transfer', 'Card'] })
-    paymentMethod!: string;
+    paymentMethod: string;
 
     @Prop()
-    note!: string;
+    note: string;
 
     @Prop({ type: [InvoiceItemSchema], default: [] })
-    items!: InvoiceItem[];
+    items: InvoiceItem[];
 }
 
 export const InvoiceSchema = SchemaFactory.createForClass(Invoice);

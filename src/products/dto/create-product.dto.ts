@@ -10,7 +10,7 @@ export class CreateProductDto {
     @ApiProperty({ description: 'Tên sản phẩm', example: 'Snack Oishi' })
     @IsString()
     @IsNotEmpty({ message: 'Tên sản phẩm không được để trống' })
-    name!: string;
+    name: string;
 
     @ApiPropertyOptional({ description: 'Đơn vị tính', example: 'Gói', default: 'Cái' })
     @IsOptional()
