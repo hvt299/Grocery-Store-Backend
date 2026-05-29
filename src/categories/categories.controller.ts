@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @ApiTags('Categories')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('api/categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) { }
@@ -18,7 +21,7 @@ export class CategoriesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lấy tất cả danh mục' })
+  @ApiOperation({ summary: 'Lấy tất cả danh mục chưa xóa' })
   findAll() {
     return this.categoriesService.findAll();
   }
@@ -36,7 +39,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Xóa danh mục' })
+  @ApiOperation({ summary: 'Xóa mềm danh mục' })
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(id);
   }

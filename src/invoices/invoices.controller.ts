@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 import { InvoicesService } from './invoices.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 
 @ApiTags('Invoices')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('api/invoices')
 export class InvoicesController {
   constructor(private readonly invoicesService: InvoicesService) { }
@@ -17,9 +20,9 @@ export class InvoicesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lấy lịch sử tất cả hóa đơn' })
-  findAll() {
-    return this.invoicesService.findAll();
+  @ApiOperation({ summary: 'Lấy lịch sử tất cả hóa đơn (Có phân trang)' })
+  findAll(@Query() query: any) {
+    return this.invoicesService.findAll(query);
   }
 
   @Get(':id')
@@ -35,7 +38,7 @@ export class InvoicesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Xóa hóa đơn' })
+  @ApiOperation({ summary: 'Xóa mềm hóa đơn và hoàn tồn kho' })
   remove(@Param('id') id: string) {
     return this.invoicesService.remove(id);
   }

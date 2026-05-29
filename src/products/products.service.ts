@@ -20,11 +20,45 @@ export class ProductsService {
     return result;
   }
 
-  async findAll(): Promise<Product[]> {
+  async findAll(query: any = {}): Promise<any> {
+    const page = parseInt(query.page, 10) || 1;
+    const limit = parseInt(query.limit, 10) || 50;
+    const skip = (page - 1) * limit;
+
+    const filter: any = { isDeleted: { $ne: true } };
+
+    if (query.search) {
+      filter.name = { $regex: query.search, $options: 'i' };
+    }
+
+    if (query.categoryId) {
+      filter.categoryId = query.categoryId;
+    }
+
+    const [data, total] = await Promise.all([
+      this.productModel
+        .find(filter)
+        .populate('categoryId', 'name')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.productModel.countDocuments(filter)
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    };
+  }
+
+  async findLowStock(): Promise<Product[]> {
     return this.productModel
-      .find({ isDeleted: { $ne: true } })
+      .find({ isDeleted: { $ne: true }, stock: { $lt: 5 } })
       .populate('categoryId', 'name')
-      .sort({ createdAt: -1 })
+      .sort({ stock: 1 })
       .exec();
   }
 

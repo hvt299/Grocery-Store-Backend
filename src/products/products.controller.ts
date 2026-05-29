@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @ApiTags('Products')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('api/products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
@@ -16,10 +19,16 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
+  @Get('low-stock')
+  @ApiOperation({ summary: 'Cảnh báo hàng sắp hết (Tồn kho < 5)' })
+  findLowStock() {
+    return this.productsService.findLowStock();
+  }
+
   @Get()
-  @ApiOperation({ summary: 'Lấy tất cả sản phẩm (kèm danh mục)' })
-  findAll() {
-    return this.productsService.findAll();
+  @ApiOperation({ summary: 'Lấy tất cả sản phẩm (Có phân trang, tìm kiếm)' })
+  findAll(@Query() query: any) {
+    return this.productsService.findAll(query);
   }
 
   @Get(':id')
@@ -35,7 +44,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Xóa sản phẩm' })
+  @ApiOperation({ summary: 'Xóa mềm sản phẩm' })
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }

@@ -57,11 +57,29 @@ export class InvoicesService {
     return result;
   }
 
-  async findAll(): Promise<Invoice[]> {
-    return this.invoiceModel
-      .find({ isDeleted: { $ne: true } })
-      .sort({ createdAt: -1 })
-      .exec();
+  async findAll(query: any = {}): Promise<any> {
+    const page = parseInt(query.page, 10) || 1;
+    const limit = parseInt(query.limit, 10) || 20;
+    const skip = (page - 1) * limit;
+
+    const filter: any = { isDeleted: { $ne: true } };
+
+    const [data, total] = await Promise.all([
+      this.invoiceModel
+        .find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.invoiceModel.countDocuments(filter)
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    };
   }
 
   async findOne(id: string): Promise<Invoice> {
