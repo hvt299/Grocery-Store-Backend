@@ -16,14 +16,13 @@ export class ProductsService {
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const createdProduct = new this.productModel(createProductDto);
     const result = await createdProduct.save();
-
     this.eventsGateway.emitDataChange('product_changed', result);
     return result;
   }
 
   async findAll(): Promise<Product[]> {
     return this.productModel
-      .find()
+      .find({ isDeleted: { $ne: true } })
       .populate('categoryId', 'name')
       .sort({ createdAt: -1 })
       .exec();
@@ -31,7 +30,7 @@ export class ProductsService {
 
   async findOne(id: string): Promise<Product> {
     const product = await this.productModel
-      .findById(id)
+      .findOne({ _id: id, isDeleted: { $ne: true } })
       .populate('categoryId', 'name')
       .exec();
     if (!product) throw new NotFoundException(`Không tìm thấy sản phẩm #${id}`);
@@ -39,17 +38,19 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
-    const updatedProduct = await this.productModel.findByIdAndUpdate(id, updateProductDto, { new: true }).exec();
+    const updatedProduct = await this.productModel
+      .findOneAndUpdate({ _id: id, isDeleted: { $ne: true } }, updateProductDto, { new: true })
+      .exec();
     if (!updatedProduct) throw new NotFoundException(`Không tìm thấy sản phẩm #${id}`);
-
     this.eventsGateway.emitDataChange('product_changed', updatedProduct);
     return updatedProduct;
   }
 
   async remove(id: string): Promise<Product> {
-    const deletedProduct = await this.productModel.findByIdAndDelete(id).exec();
+    const deletedProduct = await this.productModel
+      .findByIdAndUpdate(id, { isDeleted: true }, { new: true })
+      .exec();
     if (!deletedProduct) throw new NotFoundException(`Không tìm thấy sản phẩm #${id}`);
-
     this.eventsGateway.emitDataChange('product_changed', deletedProduct);
     return deletedProduct;
   }
