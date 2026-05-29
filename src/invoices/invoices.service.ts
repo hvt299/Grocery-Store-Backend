@@ -57,6 +57,93 @@ export class InvoicesService {
     return result;
   }
 
+  async getDashboardAnalytics(): Promise<any> {
+    const vnTimeStr = new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" });
+    const nowVN = new Date(vnTimeStr);
+
+    const startOfToday = new Date(Date.UTC(nowVN.getFullYear(), nowVN.getMonth(), nowVN.getDate(), -7, 0, 0, 0));
+    const startOfMonth = new Date(Date.UTC(nowVN.getFullYear(), nowVN.getMonth(), 1, -7, 0, 0, 0));
+
+    const sevenDaysAgo = new Date(startOfToday);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+
+    const thirtyDaysAgo = new Date(startOfToday);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+
+    const analytics = await this.invoiceModel.aggregate([
+      { $match: { isDeleted: { $ne: true } } },
+      {
+        $facet: {
+          today: [
+            { $match: { createdAt: { $gte: startOfToday } } },
+            { $group: { _id: null, revenue: { $sum: '$totalAmount' }, cost: { $sum: '$totalCost' }, orders: { $sum: 1 } } }
+          ],
+          month: [
+            { $match: { createdAt: { $gte: startOfMonth } } },
+            { $group: { _id: null, revenue: { $sum: '$totalAmount' }, cost: { $sum: '$totalCost' }, orders: { $sum: 1 } } }
+          ],
+          topProducts: [
+            { $match: { createdAt: { $gte: startOfMonth } } },
+            { $unwind: '$items' },
+            {
+              $group: {
+                _id: '$items.productId',
+                name: { $first: '$items.productName' },
+                totalQuantity: { $sum: '$items.quantity' },
+                totalRevenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } }
+              }
+            },
+            { $sort: { totalQuantity: -1 } },
+            { $limit: 5 }
+          ],
+          paymentMethods: [
+            { $match: { createdAt: { $gte: startOfMonth } } },
+            { $group: { _id: '$paymentMethod', count: { $sum: 1 }, total: { $sum: '$totalAmount' } } }
+          ],
+          weeklyTrend: [
+            { $match: { createdAt: { $gte: sevenDaysAgo } } },
+            {
+              $group: {
+                _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: '+07:00' } },
+                revenue: { $sum: '$totalAmount' },
+                profit: { $sum: { $subtract: ['$totalAmount', '$totalCost'] } }
+              }
+            },
+            { $sort: { _id: 1 } }
+          ]
+        }
+      }
+    ]);
+
+    const result = analytics[0];
+
+    const summary = {
+      today: result.today[0] || { revenue: 0, cost: 0, orders: 0 },
+      month: result.month[0] || { revenue: 0, cost: 0, orders: 0 }
+    };
+    summary.today.profit = summary.today.revenue - summary.today.cost;
+    summary.month.profit = summary.month.revenue - summary.month.cost;
+
+    const soldProductIds = await this.invoiceModel.distinct('items.productId', {
+      createdAt: { $gte: thirtyDaysAgo },
+      isDeleted: { $ne: true }
+    });
+
+    const deadStock = await this.productModel.find({
+      _id: { $nin: soldProductIds as any[] },
+      stock: { $gt: 0 },
+      isDeleted: { $ne: true }
+    }).select('name stock price').limit(10).exec();
+
+    return {
+      summary,
+      topProducts: result.topProducts,
+      paymentMethods: result.paymentMethods,
+      weeklyTrend: result.weeklyTrend,
+      deadStock
+    };
+  }
+
   async findAll(query: any = {}): Promise<any> {
     const page = parseInt(query.page, 10) || 1;
     const limit = parseInt(query.limit, 10) || 20;

@@ -19,6 +19,12 @@ export class InvoicesController {
     return this.invoicesService.create(createInvoiceDto);
   }
 
+  @Get('dashboard/analytics')
+  @ApiOperation({ summary: 'Lấy toàn bộ chỉ số Thống kê cho Dashboard' })
+  getDashboardAnalytics() {
+    return this.invoicesService.getDashboardAnalytics();
+  }
+
   @Get()
   @ApiOperation({ summary: 'Lấy lịch sử tất cả hóa đơn (Có phân trang)' })
   findAll(@Query() query: any) {
