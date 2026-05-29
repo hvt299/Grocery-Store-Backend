@@ -31,6 +31,12 @@ export class ProductsController {
     return this.productsService.findAll(query);
   }
 
+  @Get('upload-signature')
+  @ApiOperation({ summary: 'Cấp chữ ký số để upload ảnh lên Cloudinary' })
+  getUploadSignature() {
+    return this.productsService.getUploadSignature();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Lấy thông tin 1 sản phẩm' })
   findOne(@Param('id') id: string) {

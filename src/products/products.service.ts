@@ -5,6 +5,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product, ProductDocument } from './schemas/product.schema';
 import { EventsGateway } from '../events/events.gateway';
+import { v2 as cloudinary } from 'cloudinary';
 
 @Injectable()
 export class ProductsService {
@@ -87,5 +88,29 @@ export class ProductsService {
     if (!deletedProduct) throw new NotFoundException(`Không tìm thấy sản phẩm #${id}`);
     this.eventsGateway.emitDataChange('product_changed', deletedProduct);
     return deletedProduct;
+  }
+
+  getUploadSignature() {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
+    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+    if (!cloudName || !apiKey || !apiSecret) {
+      throw new Error('Thiếu cấu hình Cloudinary trong file .env của Backend!');
+    }
+
+    const signature = cloudinary.utils.api_sign_request(
+      { timestamp },
+      apiSecret
+    );
+
+    return {
+      timestamp,
+      signature,
+      apiKey,
+      cloudName
+    };
   }
 }
