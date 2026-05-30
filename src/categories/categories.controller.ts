@@ -34,12 +34,14 @@ export class CategoriesController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Cập nhật danh mục' })
+  @ApiResponse({ status: 200, description: 'Cập nhật thành công.' })
   update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoriesService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Xóa mềm danh mục' })
+  @ApiResponse({ status: 200, description: 'Xóa thành công.' })
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(id);
   }

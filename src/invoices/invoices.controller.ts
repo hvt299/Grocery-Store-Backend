@@ -39,12 +39,14 @@ export class InvoicesController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Cập nhật hóa đơn (Hạn chế dùng)' })
+  @ApiResponse({ status: 200, description: 'Cập nhật thành công.' })
   update(@Param('id') id: string, @Body() updateInvoiceDto: UpdateInvoiceDto) {
     return this.invoicesService.update(id, updateInvoiceDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Xóa mềm hóa đơn và hoàn tồn kho' })
+  @ApiResponse({ status: 200, description: 'Xóa và hoàn kho thành công.' })
   remove(@Param('id') id: string) {
     return this.invoicesService.remove(id);
   }

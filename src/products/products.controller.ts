@@ -45,12 +45,14 @@ export class ProductsController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Cập nhật sản phẩm' })
+  @ApiResponse({ status: 200, description: 'Cập nhật thành công.' })
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Xóa mềm sản phẩm' })
+  @ApiResponse({ status: 200, description: 'Xóa thành công.' })
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }
