@@ -29,7 +29,10 @@ export class ProductsService {
     const filter: any = { isDeleted: { $ne: true } };
 
     if (query.search) {
-      filter.name = { $regex: query.search, $options: 'i' };
+      filter.$or = [
+        { name: { $regex: query.search, $options: 'i' } },
+        { sku: { $regex: query.search, $options: 'i' } }
+      ];
     }
 
     if (query.categoryId) {
