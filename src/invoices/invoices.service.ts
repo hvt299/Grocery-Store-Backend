@@ -177,7 +177,7 @@ export class InvoicesService {
 
   async update(id: string, updateInvoiceDto: UpdateInvoiceDto): Promise<Invoice> {
     const updatedInvoice = await this.invoiceModel
-      .findOneAndUpdate({ _id: id, isDeleted: { $ne: true } }, updateInvoiceDto, { new: true })
+      .findOneAndUpdate({ _id: id, isDeleted: { $ne: true } }, updateInvoiceDto, { returnDocument: 'after' })
       .exec();
     if (!updatedInvoice) throw new NotFoundException(`Không tìm thấy hóa đơn #${id}`);
     this.eventsGateway.emitDataChange('invoice_changed', updatedInvoice);

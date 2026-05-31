@@ -74,7 +74,7 @@ export class ProductsService {
 
   async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
     const updatedProduct = await this.productModel
-      .findOneAndUpdate({ _id: id, isDeleted: { $ne: true } }, updateProductDto, { new: true })
+      .findOneAndUpdate({ _id: id, isDeleted: { $ne: true } }, updateProductDto, { returnDocument: 'after' })
       .exec();
     if (!updatedProduct) throw new NotFoundException(`Không tìm thấy sản phẩm #${id}`);
     this.eventsGateway.emitDataChange('product_changed', updatedProduct);
@@ -83,7 +83,7 @@ export class ProductsService {
 
   async remove(id: string): Promise<Product> {
     const deletedProduct = await this.productModel
-      .findByIdAndUpdate(id, { isDeleted: true }, { new: true })
+      .findByIdAndUpdate(id, { isDeleted: true }, { returnDocument: 'after' })
       .exec();
     if (!deletedProduct) throw new NotFoundException(`Không tìm thấy sản phẩm #${id}`);
     this.eventsGateway.emitDataChange('product_changed', deletedProduct);

@@ -32,7 +32,7 @@ export class CategoriesService {
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
     const updatedCategory = await this.categoryModel
-      .findOneAndUpdate({ _id: id, isDeleted: { $ne: true } }, updateCategoryDto, { new: true })
+      .findOneAndUpdate({ _id: id, isDeleted: { $ne: true } }, updateCategoryDto, { returnDocument: 'after' })
       .exec();
     if (!updatedCategory) throw new NotFoundException(`Không tìm thấy danh mục #${id}`);
     this.eventsGateway.emitDataChange('category_changed', updatedCategory);
@@ -41,7 +41,7 @@ export class CategoriesService {
 
   async remove(id: string): Promise<Category> {
     const deletedCategory = await this.categoryModel
-      .findByIdAndUpdate(id, { isDeleted: true }, { new: true })
+      .findByIdAndUpdate(id, { isDeleted: true }, { returnDocument: 'after' })
       .exec();
     if (!deletedCategory) throw new NotFoundException(`Không tìm thấy danh mục #${id}`);
     this.eventsGateway.emitDataChange('category_changed', deletedCategory);
