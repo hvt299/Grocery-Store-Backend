@@ -60,7 +60,7 @@ export class ProductsService {
 
   async findLowStock(): Promise<Product[]> {
     return this.productModel
-      .find({ isDeleted: { $ne: true }, stock: { $lt: 5 } })
+      .find({ isDeleted: { $ne: true }, stock: { $lt: 10 } })
       .populate('categoryId', 'name')
       .sort({ stock: 1 })
       .exec();
