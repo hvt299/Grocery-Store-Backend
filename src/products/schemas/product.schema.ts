@@ -9,6 +9,9 @@ export class Product {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null })
     categoryId: Category;
 
+    @Prop({ unique: true, sparse: true, trim: true })
+    sku: string;
+
     @Prop({ required: true, trim: true })
     name: string;
 
@@ -26,6 +29,9 @@ export class Product {
 
     @Prop({ default: null })
     imageUrl: string;
+
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

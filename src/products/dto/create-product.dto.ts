@@ -7,6 +7,11 @@ export class CreateProductDto {
     @IsMongoId({ message: 'categoryId phải là một ObjectId hợp lệ' })
     categoryId?: string;
 
+    @ApiPropertyOptional({ description: 'Mã vạch sản phẩm (SKU)', example: '8934567890123' })
+    @IsOptional()
+    @IsString()
+    sku?: string;
+
     @ApiProperty({ description: 'Tên sản phẩm', example: 'Snack Oishi' })
     @IsString()
     @IsNotEmpty({ message: 'Tên sản phẩm không được để trống' })

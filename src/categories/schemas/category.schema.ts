@@ -7,6 +7,9 @@ export type CategoryDocument = HydratedDocument<Category>;
 export class Category {
     @Prop({ required: true, trim: true })
     name: string;
+
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

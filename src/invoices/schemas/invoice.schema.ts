@@ -20,6 +20,9 @@ export class InvoiceItem {
 
     @Prop({ required: true })
     price: number;
+
+    @Prop({ required: true, default: 0 })
+    costPrice: number;
 }
 const InvoiceItemSchema = SchemaFactory.createForClass(InvoiceItem);
 
@@ -27,6 +30,12 @@ const InvoiceItemSchema = SchemaFactory.createForClass(InvoiceItem);
 export class Invoice {
     @Prop({ required: true, default: 0 })
     totalAmount: number;
+
+    @Prop({ required: true, default: 0 })
+    totalCost: number;
+
+    @Prop({ default: 0 })
+    discount: number;
 
     @Prop({ default: 'Cash', enum: ['Cash', 'Transfer', 'Card'] })
     paymentMethod: string;
@@ -36,6 +45,9 @@ export class Invoice {
 
     @Prop({ type: [InvoiceItemSchema], default: [] })
     items: InvoiceItem[];
+
+    @Prop({ default: false })
+    isDeleted: boolean;
 }
 
 export const InvoiceSchema = SchemaFactory.createForClass(Invoice);
