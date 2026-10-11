@@ -40,6 +40,9 @@ export class Invoice {
     @Prop({ default: 'Cash', enum: ['Cash', 'Transfer', 'Card'] })
     paymentMethod: string;
 
+    @Prop({ default: 'Thu ngân' })
+    sellerName: string;
+
     @Prop()
     note: string;
 

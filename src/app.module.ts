@@ -26,10 +26,13 @@ import { AppService } from './app.service';
       }),
     }),
 
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 100,
-    }]),
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => [{
+        ttl: Number(configService.get('THROTTLE_TTL')) || 60000,
+        limit: Number(configService.get('THROTTLE_LIMIT')) || 100,
+      }],
+    }),
 
     CategoriesModule,
     ProductsModule,

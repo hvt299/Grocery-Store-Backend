@@ -24,9 +24,14 @@ export class AuthService {
             throw new UnauthorizedException('Tài khoản hoặc mật khẩu không đúng!');
         }
 
-        const payload = { sub: (user as any)._id, role: user.role };
+        const payload = { sub: (user as any)._id, username: user.username, role: user.role };
         return {
             access_token: await this.jwtService.signAsync(payload),
+            user: {
+                id: (user as any)._id,
+                username: user.username,
+                role: user.role,
+            },
         };
     }
 }
