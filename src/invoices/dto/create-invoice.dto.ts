@@ -40,6 +40,11 @@ export class CreateInvoiceDto {
     @IsEnum(['Cash', 'Transfer', 'Card'])
     paymentMethod?: string;
 
+    @ApiPropertyOptional({ description: 'Tên người bán / thu ngân' })
+    @IsOptional()
+    @IsString()
+    sellerName?: string;
+
     @ApiPropertyOptional({ description: 'Ghi chú thêm' })
     @IsOptional()
     @IsString()

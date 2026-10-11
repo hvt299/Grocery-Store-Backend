@@ -59,8 +59,9 @@ export class ProductsService {
   }
 
   async findLowStock(): Promise<Product[]> {
+    const threshold = Number(process.env.LOW_STOCK_THRESHOLD) || 5;
     return this.productModel
-      .find({ isDeleted: { $ne: true }, stock: { $lt: 10 } })
+      .find({ isDeleted: { $ne: true }, stock: { $lt: threshold } })
       .populate('categoryId', 'name')
       .sort({ stock: 1 })
       .exec();
